@@ -1,7 +1,7 @@
 import Cylinder
 
 # Bank Parameters
-fills = 3
+fills = 1
 empty_pressure = 50
 bank = [Cylinder.Cylinder(12, 232, "Bank 1", 232),
         Cylinder.Cylinder(12, 232, "Bank 2", 232),
@@ -28,27 +28,31 @@ def print_state(label):
         print()  # newline
 
 
-print_state("Starting")
-for i in range(1, fills+1):
-    # Combine target tanks into 1 big tank for the sake of analysis
-    combined_target = target[0].copy()
-    combined_size = 0
+def main():
+    print_state("Starting")
+    for i in range(1, fills+1):
+        # Combine target tanks into 1 big tank for the sake of analysis
+        combined_target = target[0].copy()
+        combined_size = 0
 
-    for ii in target:
-        combined_target.transfill(ii)
-        combined_size += ii.volume
-
-    combined_target.volume = combined_size
-
-    for ii in bank:
-        if combined_target.pressure != combined_target.max_pressure:
+        for ii in target:
             combined_target.transfill(ii)
+            combined_size += ii.volume
 
-    for ii in target:
-        ii.pressure = combined_target.pressure
+        combined_target.volume = combined_size
 
-    print("------------------------------------------------------------")
-    print_state("Fill " + str(i))
+        for ii in bank:
+            if combined_target.pressure != combined_target.max_pressure:
+                combined_target.transfill(ii)
 
-    for ii in target:
-        ii.pressure = empty_pressure
+        for ii in target:
+            ii.pressure = combined_target.pressure
+
+        print("------------------------------------------------------------")
+        print_state("Fill " + str(i))
+
+        for ii in target:
+            ii.pressure = empty_pressure
+
+
+main()
